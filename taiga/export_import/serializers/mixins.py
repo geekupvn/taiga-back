@@ -24,15 +24,17 @@ from taiga.base.fields import Field, MethodField, DateTimeField
 from taiga.projects.history import models as history_models
 from taiga.projects.attachments import models as attachments_models
 from taiga.projects.history import services as history_service
+from taiga.users import models as users_models
 
-from .fields import (UserRelatedField, HistorySnapshotField, HistoryUserField,
+from .cache import cached_get_user_by_pk
+from .fields import (UserRelatedField, HistoryUserField,
                      HistoryDiffField, HistoryValuesField, FileField)
 
 
 class HistoryExportSerializer(serializers.LightSerializer):
     user = HistoryUserField()
     diff = HistoryDiffField()
-    snapshot = HistorySnapshotField()
+    snapshot = MethodField()
     values = HistoryValuesField()
     comment = Field()
     delete_comment_date = DateTimeField()
@@ -44,6 +46,24 @@ class HistoryExportSerializer(serializers.LightSerializer):
     is_snapshot = Field()
     type = Field()
 
+    def get_snapshot(self, obj):
+        print("XXX", obj.project, obj.key)
+        snapshot = obj.snapshot
+        if snapshot is None:
+            return None
+        try:
+            owner = cached_get_user_by_pk(snapshot.get('owner', None))
+            snapshot['owner'] = owner.email
+        except users_models.User.DoesNotExist:
+            pass
+
+        try:
+            assigned_to = cached_get_user_by_pk(snapshot.get('assigned_to', None))
+            snapshot['assigned_to'] = assigned_to.email
+        except users_models.User.DoesNotExist:
+            pass
+
+        return snapshot
 
 class HistoryExportSerializerMixin(serializers.LightSerializer):
     history = MethodField("get_history")
@@ -53,7 +73,6 @@ class HistoryExportSerializerMixin(serializers.LightSerializer):
             obj,
             types=(history_models.HistoryType.change, history_models.HistoryType.create,)
         )
-
         return HistoryExportSerializer(history_qs, many=True).data
 
 
