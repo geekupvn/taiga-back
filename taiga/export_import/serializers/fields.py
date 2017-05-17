@@ -75,6 +75,24 @@ class SlugRelatedField(Field):
         return None
 
 
+class HistorySnapshotField(Field):
+    def to_value(self, obj):
+        if obj is None:
+            return None
+        try:
+            owner = cached_get_user_by_pk(obj.get('owner', None))
+            obj['owner'] = owner.email
+        except users_models.User.DoesNotExist:
+            pass
+
+        try:
+            assigned_to = cached_get_user_by_pk(obj.get('assigned_to', None))
+            obj['assigned_to'] = assigned_to.email
+        except users_models.User.DoesNotExist:
+            pass
+
+        return obj
+
 class HistoryUserField(Field):
     def to_value(self, obj):
         if obj is None or obj == {}:

@@ -28,13 +28,14 @@ from taiga.projects.notifications import services as notifications_services
 from taiga.projects.history import services as history_service
 
 from .fields import (UserRelatedField, HistoryUserField, HistoryDiffField,
-                     JSONField, HistoryValuesField, CommentField, FileField)
+                     JSONField, HistorySnapshotField,
+                     HistoryValuesField, CommentField, FileField)
 
 
 class HistoryExportValidator(validators.ModelValidator):
     user = HistoryUserField()
     diff = HistoryDiffField(required=False)
-    snapshot = JSONField(required=False)
+    snapshot = HistorySnapshotField(required=False)
     values = HistoryValuesField(required=False)
     comment = CommentField(required=False)
     delete_comment_date = serializers.DateTimeField(required=False)

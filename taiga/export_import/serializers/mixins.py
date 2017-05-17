@@ -25,14 +25,14 @@ from taiga.projects.history import models as history_models
 from taiga.projects.attachments import models as attachments_models
 from taiga.projects.history import services as history_service
 
-from .fields import (UserRelatedField, HistoryUserField, HistoryDiffField,
-                     HistoryValuesField, FileField)
+from .fields import (UserRelatedField, HistorySnapshotField, HistoryUserField,
+                     HistoryDiffField, HistoryValuesField, FileField)
 
 
 class HistoryExportSerializer(serializers.LightSerializer):
     user = HistoryUserField()
     diff = HistoryDiffField()
-    snapshot = Field()
+    snapshot = HistorySnapshotField()
     values = HistoryValuesField()
     comment = Field()
     delete_comment_date = DateTimeField()

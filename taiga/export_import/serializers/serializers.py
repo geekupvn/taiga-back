@@ -290,7 +290,7 @@ class EpicExportSerializer(CustomAttributesValuesExportSerializerMixin,
     def custom_attributes_queryset(self, project):
         if project.id not in _custom_epics_attributes_cache:
             _custom_epics_attributes_cache[project.id] = list(
-                project.userstorycustomattributes.all().values('id', 'name')
+                project.epiccustomattributes.all().values('id', 'name')
             )
         return _custom_epics_attributes_cache[project.id]
 
