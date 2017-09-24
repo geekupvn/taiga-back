@@ -41,3 +41,4 @@ python-magic==0.4.13
 cryptography==1.7.1
 PyJWT==1.4.2
 asana==0.6.2
+taiga-contrib-slack===3.1
